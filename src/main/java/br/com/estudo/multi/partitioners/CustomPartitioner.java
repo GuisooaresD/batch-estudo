@@ -4,7 +4,6 @@ import lombok.Setter;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class CustomPartitioner implements Partitioner {
             final var context = new ExecutionContext();
             state(resource.exists(), "Resource does not exist: " + resource);
             context.putString(keyName, resource.getFilename());
-            context.putString("opFileName", "output"+k+++".xml");
+            context.putString("opFileName", "output" + k++ + ".xml");
             map.put(PARTITION_KEY + i, context);
             i++;
         }

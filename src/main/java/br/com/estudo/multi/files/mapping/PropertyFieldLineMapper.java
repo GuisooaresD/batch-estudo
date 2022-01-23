@@ -6,7 +6,6 @@ import br.com.estudo.multi.utils.ReflectionUtils;
 import lombok.Builder;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +16,6 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Map.entry;
 import static java.util.stream.Collectors.toMap;
-import static org.springframework.util.Assert.notEmpty;
 
 public class PropertyFieldLineMapper<T> implements FieldLineMapper<T> {
 
@@ -37,7 +35,7 @@ public class PropertyFieldLineMapper<T> implements FieldLineMapper<T> {
                 .collect(toMap(Entry::getKey, Entry::getValue));
 
         this.attrMap = stream(type.getDeclaredFields())
-            .collect(toMap(Field::getName, it -> it));
+                .collect(toMap(Field::getName, it -> it));
 
         headerOrders = newConcurrentMap();
     }
@@ -55,7 +53,7 @@ public class PropertyFieldLineMapper<T> implements FieldLineMapper<T> {
                 final var lineValue = lines.get(headerOrders.get(attr));
                 final var value = mappers.get(field.getType()).map(lineValue);
                 ReflectionUtils.setValue(obj, field, value);
-            } catch(final Exception e) {
+            } catch (final Exception e) {
                 e.getSuppressed();
             }
         });

@@ -1,6 +1,5 @@
 package br.com.estudo.multi.files.mapping.types;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import static java.lang.Integer.valueOf;

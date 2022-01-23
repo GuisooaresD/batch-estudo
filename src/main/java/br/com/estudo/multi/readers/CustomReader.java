@@ -2,7 +2,6 @@ package br.com.estudo.multi.readers;
 
 import br.com.estudo.multi.configs.CustomerContext;
 import br.com.estudo.multi.models.Customer;
-import com.google.common.collect.Iterators;
 import lombok.SneakyThrows;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
