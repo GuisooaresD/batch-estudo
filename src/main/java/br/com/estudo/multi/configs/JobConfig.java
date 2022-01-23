@@ -1,14 +1,14 @@
 package br.com.estudo.multi.configs;
 
-import br.com.estudo.multi.converters.CallbackLineHeader;
-import br.com.estudo.multi.files.mapping.PropertyFieldLineMapper;
+import br.com.estudo.multi.files.mapping.HeaderFieldLineMapper;
+import br.com.estudo.multi.files.mapping.callback.CallbackLineHeader;
 import br.com.estudo.multi.files.mapping.types.FieldMapper;
 import br.com.estudo.multi.models.Customer;
 import br.com.estudo.multi.partitioners.CustomPartitioner;
 import br.com.estudo.multi.readers.CustomHeaderReader;
 import br.com.estudo.multi.readers.CustomReader;
 import br.com.estudo.multi.readers.CustomerReader;
-import br.com.estudo.multi.readers.core.HeaderItemReader;
+import br.com.estudo.multi.readers.core.FieldLineItemReader;
 import br.com.estudo.multi.writers.CustomerWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -68,12 +68,13 @@ public class JobConfig {
     public CustomHeaderReader headerItemReader(@Value("#{stepExecutionContext[fileName]}") final String filename,
                                                final List<FieldMapper<?>> mappers,
                                                final CustomerContext customerContext) {
-        final var callbackHeader = new CallbackLineHeader(";");
-        final var lineMapper = new PropertyFieldLineMapper<>(Customer.class, callbackHeader, mappers);
-        final var reader = HeaderItemReader.<Customer>builder()
+        final var delimiter = ";";
+        final var callbackHeader = new CallbackLineHeader();
+        final var lineMapper = new HeaderFieldLineMapper<>(Customer.class, callbackHeader, mappers, delimiter);
+        final var reader = FieldLineItemReader.<Customer>builder()
                 .resource(resolver.getResource("file:C:/batch/files/multi/in/" + filename))
                 .lineCallbackHandler(callbackHeader)
-                .propertyFieldLineMapper(lineMapper)
+                .fieldLineMapper(lineMapper)
                 .build();
         reader.setSkipLines(1);
         customerContext.incrementFile();

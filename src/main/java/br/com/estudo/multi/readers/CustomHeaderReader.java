@@ -2,7 +2,7 @@ package br.com.estudo.multi.readers;
 
 import br.com.estudo.multi.configs.CustomerContext;
 import br.com.estudo.multi.models.Customer;
-import br.com.estudo.multi.readers.core.HeaderItemReader;
+import br.com.estudo.multi.readers.core.FieldLineItemReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemReader;
@@ -13,7 +13,7 @@ import org.springframework.batch.item.ItemStreamReader;
 public class CustomHeaderReader implements ItemReader<Customer>, ItemStreamReader<Customer> {
 
     private final CustomerContext customerContext;
-    private final HeaderItemReader<Customer> reader;
+    private final FieldLineItemReader<Customer> reader;
     private int count = 0;
 
     @Override
