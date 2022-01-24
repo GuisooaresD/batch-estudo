@@ -14,7 +14,8 @@ public class FieldLineItemReader<T> extends AbstractLineItemReader<T> {
     private final FieldLineMapper<T> fieldLineMapper;
 
     @Builder
-    public FieldLineItemReader(final Resource resource, final LineCallbackHandler lineCallbackHandler,
+    public FieldLineItemReader(final Resource resource,
+                               final LineCallbackHandler lineCallbackHandler,
                                final FieldLineMapper<T> fieldLineMapper) {
         super(resource, lineCallbackHandler);
         this.fieldLineMapper = fieldLineMapper;

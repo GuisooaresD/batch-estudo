@@ -5,9 +5,8 @@ import br.com.estudo.multi.files.mapping.callback.CallbackLineHeader;
 import br.com.estudo.multi.files.mapping.types.FieldMapper;
 import br.com.estudo.multi.models.Customer;
 import br.com.estudo.multi.partitioners.CustomPartitioner;
+import br.com.estudo.multi.processors.CustomerProcessor;
 import br.com.estudo.multi.readers.CustomHeaderReader;
-import br.com.estudo.multi.readers.CustomReader;
-import br.com.estudo.multi.readers.CustomerReader;
 import br.com.estudo.multi.readers.core.FieldLineItemReader;
 import br.com.estudo.multi.writers.CustomerWriter;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +34,7 @@ import java.util.List;
 public class JobConfig {
 
     public static final int THREAD_SIZE = 5;
+    public static final int CHUNK_SIZE = 1000;
 
     private final StepBuilderFactory stepBuilderFactory;
     private final JobBuilderFactory jobFactory;
@@ -52,13 +52,13 @@ public class JobConfig {
 
     @Bean
     public Step step1(final CustomerContext customerContext,
-                      final CustomReader customReader,
                       final CustomHeaderReader headerItemReader,
-                      final CustomerReader customerReader,
+                      final CustomerProcessor customerProcessor,
                       final CustomerWriter customerWriter) {
         return this.stepBuilderFactory.get("customerStep")
-                .<Customer, Customer>chunk(100)
+                .<Customer, Customer>chunk(CHUNK_SIZE)
                 .reader(headerItemReader)
+//                .processor(customerProcessor)
                 .writer(customerWriter)
                 .build();
     }
@@ -108,7 +108,7 @@ public class JobConfig {
     @SneakyThrows
     public Partitioner partitioner() {
         final var partitioner = new CustomPartitioner();
-        final var resources = resolver.getResources("file:C:/batch/files/multi/in/*.csv");
+        final var resources = resolver.getResources("file:C:/batch/files/multi/in/FILE-DOCUMENT*.csv");
         partitioner.setResources(resources);
         return partitioner;
     }

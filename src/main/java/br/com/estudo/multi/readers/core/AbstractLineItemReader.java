@@ -2,9 +2,7 @@ package br.com.estudo.multi.readers.core;
 
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamReader;
@@ -18,10 +16,9 @@ import java.util.LinkedList;
 
 import static com.google.common.collect.Lists.newLinkedList;
 import static java.util.Objects.isNull;
-import static org.springframework.batch.core.ExitStatus.COMPLETED;
 
 @Setter
-public abstract class AbstractLineItemReader<T> implements ItemStreamReader<T>, StepExecutionListener {
+public abstract class AbstractLineItemReader<T> implements ItemStreamReader<T> {
 
     private final Resource resource;
     private final LineCallbackHandler lineCallbackHandler;
@@ -53,17 +50,6 @@ public abstract class AbstractLineItemReader<T> implements ItemStreamReader<T>, 
     }
 
     @Override
-    public void beforeStep(final StepExecution stepExecution) {
-        this.stepExecution = stepExecution;
-    }
-
-    @Override
-    public ExitStatus afterStep(final StepExecution stepExecution) {
-        stepExecution.setExitStatus(COMPLETED);
-        return COMPLETED;
-    }
-
-    @Override
     @SneakyThrows
     public void close() throws ItemStreamException {
 //        reader.close();
@@ -78,7 +64,7 @@ public abstract class AbstractLineItemReader<T> implements ItemStreamReader<T>, 
     protected void skip() {
         String line;
         int count = 1;
-        while ((line = nextLine()) != null && count <= skipLines) {
+        while (count <= skipLines && (line = nextLine()) != null) {
             ++count;
             if (!isNull(lineCallbackHandler)) {
                 lineCallbackHandler.handleLine(line);
@@ -107,17 +93,16 @@ public abstract class AbstractLineItemReader<T> implements ItemStreamReader<T>, 
 
     protected void bufferLines() throws IOException {
         String line;
-        int count = 0;
-        while ((line = reader.readLine()) != null && count < bufferSize) {
+        int bufferCount = 0;
+        while (bufferCount < bufferSize && (line = reader.readLine()) != null) {
             bufferLines.add(line);
-            count++;
+            bufferCount++;
         }
-        this.count += count;
+        incrementCount(bufferCount);
     }
 
     private void incrementCount(int size) {
         this.count += size;
-        executionContext.put(stepExecution.getStepName() + ".count", this.count);
     }
 
     private void readerOpen() throws IOException {

@@ -18,21 +18,21 @@ public class CustomHeaderReader implements ItemReader<Customer>, ItemStreamReade
 
     @Override
     public Customer read() {
+        if (customerContext.sizeCustomer() >= 60000) {
+            customerContext.clearCustomer();
+        }
         Customer customer = null;
-        while ((customer = reader.read()) != null && customerContext.containsCustomer(customer)) {
+        do {
             count++;
             customerContext.incrementLine();
             // ignored
-        }
+        } while ((customer = reader.read()) != null && customerContext.containsCustomer(customer));
         if (customer != null) {
             customerContext.addCustomer(customer);
-            if (customerContext.sizeCustomer() >= 60000) {
-                customerContext.clearCustomer();
-            }
         } else {
             System.out.println("arquivo " + reader.fileName() + " finalizado, total " + count);
         }
-        return customer;
+        return reader.read();
     }
 
     @Override
